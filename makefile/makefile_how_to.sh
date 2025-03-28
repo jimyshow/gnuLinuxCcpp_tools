@@ -37,4 +37,71 @@ prerequisites中如果有一个以上的文件比target文件要新的话，comm
 4.
 $@--目标文件，$^--所有的依赖文件，$<--第一个依赖文件。
 
-5.
+5. 一个例子：
+   edit : main.o kbd.o command.o display.o \
+          insert.o search.o files.o utils.o
+           cc -o edit main.o kbd.o command.o display.o \
+                      insert.o search.o files.o utils.o
+   main.o : main.c defs.h
+           cc -c main.c
+   kbd.o : kbd.c defs.h command.h
+           cc -c kbd.c
+   command.o : command.c defs.h command.h
+           cc -c command.c
+   display.o : display.c defs.h buffer.h
+           cc -c display.c
+   insert.o : insert.c defs.h buffer.h
+           cc -c insert.c
+   search.o : search.c defs.h buffer.h
+           cc -c search.c
+   files.o : files.c defs.h buffer.h command.h
+           cc -c files.c
+   utils.o : utils.c defs.h
+           cc -c utils.c
+   clean :
+           rm edit main.o kbd.o command.o display.o \
+              insert.o search.o files.o utils.o
+6.
+make是如何工作的
+在默认的方式下，也就是我们只输入make命令。那么，
+  1. make会在当前目录下找名字叫“Makefile”或“makefile”的文件。
+  2. 如果找到，它会找文件中的第一个目标文件（target），在上面的例子中，他会找到“edit”这个文件，并把这个文件作为最终的目标文件。
+  3. 如果edit文件不存在，或是edit所依赖的后面的 .o 文件的文件修改时间要比edit这个文件新，那么，他就会执行后面所定义的命令来生成edit这个文件。
+  4. 如果edit所依赖的.o文件也存在，那么make会在当前文件中找目标为.o文件的依赖性，如果找到则再根据那一个规则生成.o文件。（这有点像一个堆栈的过程）
+  5. 当然，你的C文件和H文件是存在的啦，于是make会生成 .o 文件，然后再用 .o 文件声明make的终极任务，也就是执行文件edit了。
+这就是整个make的依赖性，make会一层又一层地去找文件的依赖关系，直到最终编译出第一个目标文件。在找寻的过程中，如果出现错误，比如最后被依赖的文件找不到，那么make就会直接退出，并报错，
+而对于所定义的命令的错误，或是编译不成功，make根本不理。
+make只管文件的依赖性，即，如果在我找了依赖关系之后，冒号后面的文件还是不在，那么对不起，我就不工作啦。
+7.
+如果这个工程已被编译过了，当我们修改了其中一个源文件，比如file.c，那么根据我们的依赖性，我们的目标file.o会被重编译（也就是在这个依性关系后面所定义的命令），
+于是file.o的文件也是最新的啦，于是file.o的文件修改时间要比edit要新，所以edit也会被重新链接了（详见edit目标文件后定义的命令）。
+8.
+makefile中使用变量
+我们声明一个变量，叫objects, OBJECTS, objs, OBJS, obj, 或是 OBJ，反正不管什么啦，只要能够表示obj文件就行了。我们在makefile一开始就这样定义：
+    objects = main.o kbd.o command.o display.o \
+             insert.o search.o files.o utils.o
+改良版makefile就变成下面：
+   objects = main.o kbd.o command.o display.o \
+             insert.osearch.o files.o utils.o 
+   edit : $(objects)
+           cc -o edit $(objects)
+   main.o : main.c defs.h
+           cc -c main.c
+   kbd.o : kbd.c defs.h command.h
+           cc -c kbd.c
+   command.o : command.c defs.h command.h
+           cc -c command.c
+   display.o : display.c defs.h buffer.h
+           cc -c display.c
+   insert.o : insert.c defs.h buffer.h
+           cc -c insert.c
+   search.o : search.c defs.h buffer.h
+           cc -c search.c
+   files.o : files.c defs.h buffer.h command.h
+           cc -c files.c
+   utils.o : utils.c defs.h
+           cc -c utils.c
+   clean :
+           rm edit $(objects)
+           
+  
