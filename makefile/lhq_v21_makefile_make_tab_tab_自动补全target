@@ -1,5 +1,6 @@
-# 用的wsl2，所以~/.bashrc里面初始化了很多内容
-# 
+# 用的wsl2，所以~/.bashrc里面初始化了很多内容，敲完make+一个空格命令后，再按2个tab，不能自动补全当前目录下的文件名
+# 运行“bash --norc --noprofile”，bash变为“bash-5.2$", 此时可以自动补全
+#下面的内容是使用Makefile实现通用功能：
 
 CC = gcc
 CFLAGS = -Wall
