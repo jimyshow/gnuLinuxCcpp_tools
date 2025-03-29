@@ -1,6 +1,6 @@
 # 用的wsl2，所以~/.bashrc里面初始化了很多内容，敲完make+一个空格命令后，再按2个tab，不能自动补全当前目录下的文件名
 # 运行“bash --norc --noprofile”，bash变为“bash-5.2$", 此时可以自动补全，--norc：启动bash时不读取~/.bashrc文件。这意味着任何在~/.bashrc中定义的配置或别名都不会被加载。
---noprofile：启动bash时不读取任何配置文件（如/etc/profile、~/.bash_profile、~/.bash_login或~/.profile）。这意味着任何在这些文件中定义的环境变量或配置都不会被加载。
+# --noprofile：启动bash时不读取任何配置文件（如/etc/profile、~/.bash_profile、~/.bash_login或~/.profile）。这意味着任何在这些文件中定义的环境变量或配置都不会被加载。
 
 #下面的内容是使用Makefile实现通用功能：
 
@@ -16,7 +16,8 @@ SRC = $(wildcard *.c)
 # 生成对应的可执行文件名称（去掉 .c 扩展）
 TARGETS = $(basename $(SRC))
 
-
+#OBJ = $(SRC:.c=.o) 这一行是 Makefile 里的 变量替换(Pattern Substitution)语法，用于将 .c 结尾的源文件转换为 .o 目标文件。
+#$(VAR:A=B) 表示：把变量 VAR 中所有匹配 A 的部分替换为 B。
 OBJ = $(SRC:.c=.o)
 
 # 规则：编译所有目标
