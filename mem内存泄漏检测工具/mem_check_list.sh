@@ -7,7 +7,7 @@ Linux下的Valgrind真是利器啊（不知道Valgrind的请自觉查看参考�
 更新：感谢博客园好心网友@shines77的热心推荐，即VS中有内存泄漏检测工具插件VLD(Visual Leak Detector)，需要下载安装，安装方法请看官方介绍，使用非常简单，在第一个入口文件里加上#include <vld.h>就可以了，检测报告在输出窗口中。我安装使用了下，不知道是安装错误还是什么，无论程序有无内存泄露，输出都是“No memory leaks detected.”
 下面是我通过 Valgrind第一次检测得到的结果和一点点修改后得到的结果（还没改完，所以还有不少内存泄露问题……）：
 第一次检测结果：惨不忍睹，因为程序规模有些大。
-https://img-blog.csdn.net/20140317092712796
+![image](https://img-blog.csdn.net/20140317092712796)
 
 
 
