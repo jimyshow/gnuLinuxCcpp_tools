@@ -8,14 +8,11 @@ int main() {
   printf("%d\n", array[16]);
   return 0;
 }
-
 void assign_value(int *array, int index, int value) {
   array[index] = value;
   printf("done\n");
 }
-
 编译：$ gcc -g -Wall -std=c18 -o hello_world hello_world.c 运行输出：
-
 Hello, World!
 done
 131
@@ -48,13 +45,9 @@ celeron533      1 天前
 
 w568w      1 天前   ❤️ 2
 先回答问题。看汇编就很明显了： https://godbolt.org/z/1e65616jo
-
 就像楼上说的，在 GCC 的实现下，(rbp-48) ~ (rbp-8) 是数组占据的空间，但你访问 (rbp-4) 和 rbp 位置都不会有问题（即 array+10 到 array+12 ）。再往下访问就越界了。
-
 然后关于未定义行为。学究一点地说，未定义行为的意思就是「编译器想怎么做都可以，怎么方便怎么来」。
-
 如果编译器觉得输出格式化和病毒代码很方便，那它就可以在你写未定义行为的地方输出这些代码。不要惊讶，标准明确告诉你「未定义行为无论发生什么都行」，这是完全合法的，无法从规范上指责它。
-
 总结就是，不要尝试和利用未定义行为。这就是 C 的遗留问题，如果你觉得不能接受，换一门更近代的语言吧（比如 Java 、Go ）。
 
 mahaoqu      1 天前
@@ -62,12 +55,35 @@ mahaoqu      1 天前
 
 xpzouying      1 天前
 点击链接查看和 Kimi 的对话 https://kimi.ai/share/cvuv86n6o68nvril4hcg
-
-直接 kimi 解决
+1. 编译并运行程序
+bash
+Copy
+$ gcc -g -Wall -std=c18 -o hello_world hello_world.c
+$ ./hello_world
+2. 使用GDB调试
+bash
+Copy
+$ gdb ./hello_world
+(gdb) break main
+(gdb) run
+(gdb) print &array[0]
+(gdb) print &array[16]
+(gdb) print &array[12]
+通过GDB，我们可以看到array的起始地址以及越界访问的内存地址。例如：
+array的起始地址可能是0x7ffd12345678
+array[16]的地址是0x7ffd12345678 + 16 * 4 = 0x7ffd123456a8
+array[12]的地址是0x7ffd12345678 + 12 * 4 = 0x7ffd123456a0
+3. 检查栈帧的合法范围
+我们可以通过以下命令查看栈帧的合法范围：
+bash
+Copy
+(gdb) info stack
+假设当前栈帧的合法范围是0x7ffd12345600到0x7ffd12345700，那么：
+array[16]的地址0x7ffd123456a8超出了合法范围，导致段错误。
+array[12]的地址0x7ffd123456a0仍在合法范围内，因此程序不会崩溃。            直接 kimi 解决
 
 zhyl      22 小时 39 分钟前   ❤️ 1
 换 zig 作为 c 编译器
-
 Hello, World!
 done
 thread 279701 panic: index 16 out of bounds for type 'int[10]'
@@ -80,9 +96,6 @@ fish: Job 1, './hello_world' terminated by signal SIGABRT (Abort)
 
 jettming      22 小时 10 分钟前
 内存默认 32 位对齐，和经典的 struct {char a; int b;} s;分配了 8 字节类似。难得在这看到有人用 C 语言的，哈哈。
-
-kelvinaltajiin   
-@w568w #16 看来得回炉重新看看汇编了😂 “未定义行为”解释的很清楚，感谢，有点法无禁止即可为的意思了
 
 kaedeair      18 小时 58 分钟前
 因为在回收资源的时候系统发现你把这一块内存写坏了，内存是有上下文的，边界被破坏了，所以才报错。你可以试试把偏移量换成一个比较大的数字，可能还没到返回的地方就报错了。至于小一点没报错是因为这一块内存没有被使用，是合法地址。
