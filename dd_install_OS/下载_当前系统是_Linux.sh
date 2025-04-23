@@ -1,3 +1,5 @@
+# 转自： https://github.com/bin456789/reinstall
+
 #
 #一键安装 Linux，支持 19 种常见发行版
 #一键安装 Windows，使用官方 ISO 安装而非自制镜像，脚本会自动获取 ISO 链接、自动安装 Virtio 等常见驱动
